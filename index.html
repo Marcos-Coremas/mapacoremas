@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Interativo</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 500px; }
+    </style>
+</head>
+<body>
+    <h2>Mapa Interativo</h2>
+    <div id="map"></div>
+    
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Inicializa o mapa
+        var map = L.map('map').setView([-22.9, -43.2], 14); // Coordenadas ajustáveis
+
+        // Adiciona o tile layer do OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Quadras extraídas do KMZ
+        var quadras = [
+            { id: '60145 - Coremas - Rio de Janeiro - RJ', coords: [[-22.89645953645273, -43.61168767386205], [-22.89707354218403, -43.61272300503295], [-22.89676986887206, -43.61287430141099], [-22.89677408663034, -43.61373011291526], [-22.89827948636093, -43.61692703892081], [-22.90006365769729, -43.61540243132777], [-22.89962339577394, -43.61273459577661], [-22.90037466596235, -43.61244521107434], [-22.90006958830263, -43.60983342920785], [-22.89776246967212, -43.60612385931014], [-22.8985510645231, -43.6059701264333], [-22.89849132185747, -43.60564482052698], [-22.89812322193642, -43.60569076381096], [-22.89799652004595, -43.60312239626649], [-22.8976449419394, -43.60155609607745], [-22.89592786613928, -43.60118349010131], [-22.89592932147071, -43.59997748025871], [-22.89413563299499, -43.59962961098425], [-22.89391434087283, -43.59931932740093], [-22.89279760609601, -43.60104448528706], [-22.89022141053147, -43.59918361515331], [-22.8869176518392, -43.60414650959174], [-22.89645953645273, -43.61168767386205]] }
+        ];
+
+        // Função para recuperar o estado salvo
+        function getQuadraColor(id) {
+            return localStorage.getItem(id) === 'green' ? 'green' : 'red';
+        }
+
+        // Adiciona as quadras ao mapa
+        quadras.forEach(quadra => {
+            var polygon = L.polygon(quadra.coords, { color: 'black', fillColor: getQuadraColor(quadra.id), fillOpacity: 0.6 })
+                .addTo(map)
+                .on('click', function() {
+                    var newColor = this.options.fillColor === 'red' ? 'green' : 'red';
+                    this.setStyle({ fillColor: newColor });
+                    localStorage.setItem(quadra.id, newColor);
+                });
+        });
+    </script>
+</body>
+</html>
